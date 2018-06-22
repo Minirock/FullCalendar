@@ -6,6 +6,7 @@
         <link rel="stylesheet" type="text/css" href="https://fullcalendar.io/js/fullcalendar-3.0.1/fullcalendar.min.css">
       <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
       <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.42/css/bootstrap-datetimepicker.min.css">
+      <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.js"></script>
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.min.js"></script>
       <script type="text/javascript" src="fullcalendar.js"></script>
@@ -14,11 +15,34 @@
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.js"></script>
       <script type="text/javascript" src="calendar.js"></script>
         <script type="text/javascript" src="fancybox.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"</script>
         <script src='locale/fr.js'></script>
 </head>
 
 <body>
-    <div id='calendar'></div>
+        <div id="alerte"></div>
+        <div id='calendar'></div>
+        <div id="eventContent" title="Détail de la tache" style="display:none;">
+            <form id="form_infos">
+                <label for="title">Titre:</label><input type="text" name="title" id="title_input"/>
+                Début: <span id="startTime"></span><br>
+                Fin: <span id="endTime"></span><br><br>
+                <label for="eventInfos">Description:</label><textarea rows="5" cols="30" name="eventInfos" id="eventInfos"></textarea>
+                <input type="submit" value="Enregistrer" class="btn btn-success" />
+                <input type="button" value="Copier" id="copier" class="btn btn-success" />
+                <input type="reset" value="Supprimer" class="btn btn-danger" />
+            </form>
+        </div>
+
+        <div id="eventContent_create" title="Détail de la tache" style="display:none;">
+            <form id="form_infos_create">
+                <label for="title_create">Titre:</label><input type="text" name="title_create" id="title_input_create"/>
+                Début: <span id="startTime_create"></span><br>
+                Fin: <span id="endTime_create"></span><br><br>
+                <label for="eventInfos_create">Description:</label><textarea rows="5" cols="30" name="eventInfos_create" id="eventInfos_create"></textarea>
+                <input type="submit" value="Enregistrer" class="btn btn-success" />
+            </form>
+        </div>
 
 </body>
 </html>

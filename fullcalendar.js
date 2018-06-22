@@ -13841,7 +13841,7 @@ var TimeGridEventRenderer = /** @class */ (function (_super) {
                 '') +
             '>' +
             '<div class="fc-content">' +
-            '<div class="fc-task-delete" style="text-align:right; color:red"><button class="fc-task-delete-button"><i class="glyphicon glyphicon-remove"></i></button></div>'+
+            '<div class="fc-task-delete" style="text-align:right; color:red"><button class="fc-task-delete-button"><i class="far fa-window-close"></i></button></div>'+
             (timeText ?
                 '<div class="fc-time"' +
                     ' data-start="' + util_1.htmlEscape(startTimeText) + '"' +

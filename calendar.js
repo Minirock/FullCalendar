@@ -6,89 +6,7 @@
     var edition_mode="Mode édition";
     var delete_mode="Mode suppression";
     var duplicate_mode="Mode duplication";
-
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
-        mobile_device=1;
-    }
-
-    function editMode(){
-        if(mobile_device==1){
-            editing_mobile=1;
-            deleting=0;
-            duplicating_mobile=0;
-            //On active les boutons pour dupliquer et supprimer des évents
-            document.getElementById("mobile_device" ).innerHTML =
-            '<button id="edit" type="button" class="btn btn-success">'+edition_mode+'</button>' +
-            '<button id="duplicate" type="button" class="btn btn-danger">'+duplicate_mode+'</button>' +
-            '<button id="delete" type="button" class="btn btn-danger">'+delete_mode+'</button>';
-            var b_edit=document.getElementById('edit');
-            var b_delete=document.getElementById('delete');
-            b_edit.addEventListener('click' , editMode);
-            b_delete.addEventListener('click' , deleteMode);
-        }
-    }
-
-    function deleteMode(){
-        if(mobile_device==1){
-            deleting=1;
-            editing_mobile=0;
-            duplicating_mobile=0;
-            //On active les boutons pour dupliquer et supprimer des évents
-            document.getElementById("mobile_device" ).innerHTML =
-            '<button id="edit" type="button" class="btn btn-danger">'+edition_mode+'</button>' +
-            '<button id="duplicate" type="button" class="btn btn-danger">'+duplicate_mode+'</button>' +
-            '<button id="delete" type="button" class="btn btn-success">'+delete_mode+'</button>';
-            var b_edit=document.getElementById('edit');
-            var b_delete=document.getElementById('delete');
-            var b_duplicate=document.getElementById('duplicate');
-
-            b_edit.addEventListener('click' , editMode);
-            b_delete.addEventListener('click' , deleteMode);
-            b_duplicate.addEventListener('click' , duplicateMode);
-        }
-    }
-
-    function duplicateMode(){
-        if(mobile_device==1){
-            duplicating_mobile=1;
-            editing_mobile=0;
-            deleting=0;
-            //On active les boutons pour dupliquer et supprimer des évents
-            document.getElementById("mobile_device" ).innerHTML =
-            '<button id="edit" type="button" class="btn btn-danger">'+edition_mode+'</button>' +
-            '<button id="duplicate" type="button" class="btn btn-success">'+duplicate_mode+'</button>' +
-            '<button id="delete" type="button" class="btn btn-danger">'+delete_mode+'</button>';
-            var b_edit=document.getElementById('edit');
-            var b_delete=document.getElementById('delete');
-            var b_duplicate=document.getElementById('duplicate');
-
-            b_edit.addEventListener('click' , editMode);
-            b_delete.addEventListener('click' , deleteMode);
-            b_duplicate.addEventListener('click' , duplicateMode);
-        }
-    }
-
-//edit par défaut au clic
-function device_button(){
-        if(mobile_device==1){
-            //On active les boutons pour dupliquer et supprimer des évents
-            document.getElementById("mobile_device" ).innerHTML =
-            '<button id="edit" type="button" class="btn btn-success">'+edition_mode+'</button>' +
-            '<button id="duplicate" type="button" class="btn btn-danger">'+duplicate_mode+'</button>' +
-            '<button id="delete" type="button" class="btn btn-danger">'+delete_mode+'</button>';
-            var b_edit=document.getElementById('edit');
-            var b_delete=document.getElementById('delete');
-            var b_duplicate=document.getElementById('duplicate');
-
-            b_edit.addEventListener('click' , editMode);
-            b_delete.addEventListener('click' , deleteMode);
-            b_duplicate.addEventListener('click' , duplicateMode);
-    }
-}
-
-    //on attends 100 ms pour laisser le temps au calendar d'être créé et de connaitre la div en question
-    setTimeout(device_button,100);
-
+    var event_save;
     var hoverTask;
     var copie;
     var savedEvent;
@@ -110,7 +28,7 @@ function device_button(){
       ];
       return ev;
 
-    //pas de controle sur le mousehover des éléments n'étant pas des taches on se servira donc de la variable pour détecter le cas
+    //pas de controle sur le mousehover des éléments n'étant pas des Tâches on se servira donc de la variable pour détecter le cas
     }
 
     function makeid() {
@@ -135,7 +53,7 @@ document.addEventListener('keydown', (event) => {
     if(hoverTask==1){
         if (event.ctrlKey) {
             if(nomTouche=='c'){
-                    //Copie d'une tache existante
+                    //Copie d'une Tâche existante
                     copie=1;
             }
         }
@@ -143,12 +61,112 @@ document.addEventListener('keydown', (event) => {
 
 }, false);
 
+    var form_infos = document.getElementById('form_infos');
+
+    form_infos.addEventListener('submit', function(e) {
+        var title_input = document.getElementById('title_input');
+        var result=(title_input.value!='');
+        var description_input= document.getElementById('eventInfos').value;
+        if (result) {
+            event_save.title=title_input.value;
+            event_save.description=description_input;
+            $("#eventContent").dialog('close');
+            var id_event=event_save['_id'];
+            if(id_event!=undefined){
+                console.log("delete");
+                $('#calendar').fullCalendar('removeEvents', id_event);
+            }
+            $('#calendar').fullCalendar('updateEvent', event_save);
+            $('#calendar').fullCalendar('renderEvent', event_save, true);
+            $('#calendar').fullCalendar('unselect');
+            $("#alerte").attr({class: "alert alert-success"});
+            $("#alerte").html("Modifications enregistrées");
+        }else{
+            $("#alerte").attr({class: "alert alert-danger"});
+            $("#alerte").html("Le titre doit être renseigné !");
+        }
+
+        e.preventDefault();
+
+    });
+
+    form_infos.addEventListener('reset', function(e) {
+        var id_event=event_save['_id'];
+        $("#eventContent").dialog('close');
+        $('#calendar').fullCalendar('removeEvents', id_event);
+        $("#alerte").attr({class: "alert alert-success"});
+        $("#alerte").html("Tâche supprimée");
+        e.preventDefault();
+    });
+
+    var copy = document.getElementById('copier');
+    copy.addEventListener('click', function(e) {
+        copie=1;
+        $("#eventContent").dialog('close');
+        $("#alerte").attr({class: "alert alert-success"});
+        $("#alerte").html("Tâche copiée");
+        e.preventDefault();
+    });
+
+
+
+var form_infos_create = document.getElementById('form_infos_create');
+
+form_infos_create.addEventListener('submit', function(e) {
+    var title_input = document.getElementById('title_input_create');
+    var result=(title_input.value!='');
+    var description_input= document.getElementById('eventInfos_create').value;
+    if (result) {
+        event_save.title=title_input.value;
+        event_save.description=description_input;
+        $("#eventContent_create").dialog('close');
+        var id_event=event_save['_id'];
+        if(id_event!=undefined){
+            console.log("delete");
+            $('#calendar').fullCalendar('removeEvents', id_event);
+        }
+        $('#calendar').fullCalendar('updateEvent', event_save);
+        $('#calendar').fullCalendar('renderEvent', event_save, true);
+        $('#calendar').fullCalendar('unselect');
+        $("#alerte").attr({class: "alert alert-success"});
+        $("#alerte").html("Modifications enregistrées");
+    }else{
+        $("#alerte").attr({class: "alert alert-danger"});
+        $("#alerte").html("Le titre doit être renseigné !");
+    }
+
+    e.preventDefault();
+
+});
 
  $(document).ready(function() {
+        $( "#eventContent" ).dialog({
+            autoOpen: false,
+            width: 350,
+            modal: true
+        });
+        $( "#eventContent_create" ).dialog({
+            autoOpen: false,
+            width: 350,
+            modal: true
+        });
         var adding=0;
         var unique=0;
         hoverTask=0;
         copie=0;
+
+        var today=new Date();
+        var t_jour=today.getDate();
+        if(t_jour<10){
+            t_jour="0"+t_jour;
+        }
+        var t_mois=today.getMonth()+1;
+        if(t_mois<10){
+            t_mois="0"+t_mois;
+        }
+        var t_annee=today.getFullYear();
+
+        var today_formated=t_annee+"-"+t_mois+"-"+t_jour;
 
         $('#calendar').fullCalendar({
 
@@ -162,40 +180,62 @@ document.addEventListener('keydown', (event) => {
             center: 'title',
             right: 'month,agendaWeek,agendaDay'
           },
-          defaultDate: '2018-06-18',
+          defaultDate: today_formated,
           navLinks: true, // can click day/week names to navigate views
           selectable: true,
           selectHelper: true,
 
+        //nouvelle date
+        eventClick: function(event, element) {
+            event_save=event;
+        },
+
+            eventRender: function (event, element) {
+                //console.log(element);
+                if(event_save!=undefined){
+                    event=event_save;
+                }
+                element.attr('href', 'javascript:void(0);');
+
+                element.click(function() {
+                    console.log("ouvre modal render");
+                    $("#title_input").attr({value :event.title});
+                    $("#title").html(event.title);
+                    $("#startTime").html(moment(event.start).format('MMM Do h:mm A'));
+                    $("#endTime").html(moment(event.end).format('MMM Do h:mm A'));
+                    $("#eventInfos").html(event.description);
+                    $("#eventContent").dialog('open');
+                });
+
+            },
+
+
           select: function(start, end,jsEvent) {
-                if(copie!=1 && duplicating_mobile!=1){
-                    //insertion date
-                    adding=1;
-                    var title = prompt('Event Title:');
-                    var desc = prompt('Event Description:');
-                    var eventData;
-                    if (title) {
-                      eventData = {
-                        title: title,
+                if(copie!=1){
+                    var eventData = {
+                        title: "",
                         start: start,
                         end: end,
-                        description: desc
+                        description: ""
                       };
-                      $('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
-                    }
-                    $('#calendar').fullCalendar('unselect');
+                    $("#startTime_create").html(moment(start).format('MMM Do h:mm A'));
+                    $("#endTime_create").html(moment(end).format('MMM Do h:mm A'));
+                    //$("#title_input").removeAttr("value");
+                    $("#title_input_create").attr({value: " "});
+                    $("#eventInfos_create").html(" ");
+                    event_save=eventData;
+                    console.log("create");
+                    $("#eventContent_create").dialog('open');
                 }else{
                     //on copie savedEvent au nouvelle date
-                    if(copie==1 || duplicating_mobile==1){
-                        savedEvent['start']=start;
-                        savedEvent['end']=end;
+                        event_save['start']=start;
+                        event_save['end']=end;
                         //on doit également changer l'id de l'event pour la suppression
-                        savedEvent['_id']='_fc'+makeid();
-                        $('#calendar').fullCalendar('renderEvent', savedEvent, true);
+                        event_save['_id']='_fc'+makeid();
+                        $('#calendar').fullCalendar('renderEvent', event_save, true);
                         $('#calendar').fullCalendar('unselect');
                         unique=0
                         copie=0;
-                    }
                 }
 
                 },
@@ -203,65 +243,18 @@ document.addEventListener('keydown', (event) => {
                 eventLimit: true, // allow 'more' link when too many events
                 events: getEvents(),
 
-        //nouvelle date
-        eventClick: function(event, element) {
-            if(deleting==0){
-                //sur mobile on copie et édite au clic; et non sur pc
-                if(mobile_device==1){
-                    if(duplicating_mobile==1){
-                        savedEvent=event;
-                        alert("Event enregistré");
-                    }else{
-                        //edition mobile
-                        var title_modified = prompt('Event Title:');
-                        var desc_modified = prompt('Event Description:');
-                        var eventData;
-                        if (title_modified) {
-                            event.title=title_modified;
-                            event.description=desc_modified;
-                            $('#calendar').fullCalendar('updateEvent', event); // stick? = true
-                        }
-                    }
-                }else{
-                    //gestion pc
-                    var title_modified = prompt('Event Title:');
-                    var desc_modified = prompt('Event Description:');
-                    var eventData;
-                    if (title_modified) {
-                        event.title=title_modified;
-                        event.description=desc_modified;
-                        $('#calendar').fullCalendar('updateEvent', event); // stick? = true
-                    }
-                }
-            }else{
-                //suppression de l'event
-                var id_event=event['_id'];
-                $('#calendar').fullCalendar('removeEvents', id_event);
-                //sur mobile on supprime à la chaine et non sur pc
-                if(mobile_device!=1){
-                    deleting=0;
-                }
-            }
-        },
 
         eventMouseout : function( event, jsEvent, view ) {
-                adding=0;
                 hoverTask=0;
                 //unique sert à ne pas récupérer les events survolé après la copie
                 if(copie==1 && unique == 0){
-                    savedEvent=event;
+                    event_save=event;
                     unique=1;
                 }
         },
 
         eventMouseover : function ( event, jsEvent, view ) {
                 hoverTask=1;
-                var deleted=document.getElementsByClassName('fc-task-delete-button');
-                for (var i = 0; i < deleted.length; i++) {
-                    deleted[i].addEventListener('click',  (event) => {
-                        deleting=1;
-                    },false);
-                }
         },
     }
 
